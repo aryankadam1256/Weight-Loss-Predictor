@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weight Loss Prediction</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs/lib/browser/math.js"></script>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
+</head>
+<body>
+    <header>
+        <h1>Weight Loss Predictor</h1>
+    </header>
+
+    <h3>Track your Weight Loss Progress</h3>
+    
+    <p class="input-title">Please enter the following details to get your weight loss prediction:</p>
+
+    <form id="inputForm">
+        <div class="form-group">
+            <label for="bmi">BMI:</label>
+            <input type="number" id="bmi" name="bmi" required>
+        </div>
+
+        <div class="form-group">
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required>
+        </div>
+
+        <div class="form-group">
+            <label for="gender">Gender (0 = Female, 1 = Male):</label>
+            <input type="number" id="gender" name="gender" required>
+        </div>
+
+        <div class="form-group">
+            <label for="exerciseDuration">Exercise Duration (minutes per day):</label>
+            <input type="number" id="exerciseDuration" name="exerciseDuration" required>
+        </div>
+
+        <div class="form-group">
+            <label for="numDays">Number of Days:</label>
+            <input type="number" id="numDays" name="numDays" required>
+        </div>
+
+        <div class="form-group">
+            <label for="exerciseType">Exercise Type (0 = Light, 1 = Cardio, 2 = Strength):</label>
+            <input type="number" id="exerciseType" name="exerciseType" required>
+        </div>
+
+        <button type="button" onclick="predictWeightLoss()">Predict Weight Loss</button>
+    </form>
+
+    <h2>Predicted Weight Loss: <span id="predictionOutput"></span> kg</h2>
+
+    <footer>*Note: This Model assumes the user has a healthy diet</footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
