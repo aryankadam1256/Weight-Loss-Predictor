@@ -3,57 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weight Loss Prediction</title>
-    <script src="https://cdn.jsdelivr.net/npm/mathjs/lib/browser/math.js"></script>
-    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
+    <title>Weight Loss Prediction Form</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #ff9966, #ff5e62);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        label, input, select {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        input, select {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        button {
+            padding: 12px;
+            width: 100%;
+            background: #ff5e62;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #e04e56;
+        }
+        #exerciseTypeContainer {
+            display: none;
+        }
+        #bmiResult, #result {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Weight Loss Predictor</h1>
-    </header>
+    <div class="container">
+        <h2>Weight Loss Prediction</h2>
+        <form id="predictionForm">
+            <label>Weight (kg): <input type="number" id="weight" required></label>
+            <label>Height (m): <input type="number" id="height" step="0.01" required></label>
+            <label>Exercise Duration (minutes): <input type="number" id="exerciseDuration" required></label>
+            <div id="exerciseTypeContainer">
+                <label>Exercise Type:
+                    <select id="exerciseType">
+                        <option value="Cardio">Cardio</option>
+                        <option value="Strength">Strength</option>
+                        <option value="Mixed">Mixed</option>
+                    </select>
+                </label>
+            </div>
+            <label>Sex:
+                <select id="sex">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </label>
+            <button type="submit">Predict</button>
+        </form>
+        <p id="bmiResult"></p>
+        <p id="result"></p>
+    </div>
 
-    <h3>Track your Weight Loss Progress</h3>
-    
-    <p class="input-title">Please enter the following details to get your weight loss prediction:</p>
+    <script>
+        const coefficients = [
+            0.0443, 0.4709, 0.3148, 0.2004, 0.1223, -0.1265, 0.0042, 0.1338, -0.1338
+        ];
+        const bias = -0.2748;
 
-    <form id="inputForm">
-        <div class="form-group">
-            <label for="bmi">BMI:</label>
-            <input type="number" id="bmi" name="bmi" required>
-        </div>
+        function oneHotEncode(value, categories) {
+            return categories.map(category => value === category ? 1 : 0);
+        }
 
-        <div class="form-group">
-            <label for="age">Age:</label>
-            <input type="number" id="age" name="age" required>
-        </div>
+        document.getElementById("exerciseDuration").addEventListener("input", function() {
+            let exerciseTypeContainer = document.getElementById("exerciseTypeContainer");
+            if (this.value > 0) {
+                exerciseTypeContainer.style.display = "block";
+            } else {
+                exerciseTypeContainer.style.display = "none";
+            }
+        });
 
-        <div class="form-group">
-            <label for="gender">Gender (0 = Female, 1 = Male):</label>
-            <input type="number" id="gender" name="gender" required>
-        </div>
+        document.getElementById("predictionForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            predictWeightLoss();
+        });
 
-        <div class="form-group">
-            <label for="exerciseDuration">Exercise Duration (minutes per day):</label>
-            <input type="number" id="exerciseDuration" name="exerciseDuration" required>
-        </div>
-
-        <div class="form-group">
-            <label for="numDays">Number of Days:</label>
-            <input type="number" id="numDays" name="numDays" required>
-        </div>
-
-        <div class="form-group">
-            <label for="exerciseType">Exercise Type (0 = Light, 1 = Cardio, 2 = Strength):</label>
-            <input type="number" id="exerciseType" name="exerciseType" required>
-        </div>
-
-        <button type="button" onclick="predictWeightLoss()">Predict Weight Loss</button>
-    </form>
-
-    <h2>Predicted Weight Loss: <span id="predictionOutput"></span> kg</h2>
-
-    <footer>*Note: This Model assumes the user has a healthy diet</footer>
-
-    <script src="script.js"></script>
+        async function predictWeightLoss() {
+            let weight = parseFloat(document.getElementById('weight').value);
+            let height = parseFloat(document.getElementById('height').value);
+            let exerciseDuration = parseFloat(document.getElementById('exerciseDuration').value);
+            let exerciseType = document.getElementById('exerciseType').value;
+            let sex = document.getElementById('sex').value;
+            let bmi = weight / (height * height);
+            
+            let exerciseCategories = ['Cardio', 'Strength', 'Mixed'];
+            let sexCategories = ['Male', 'Female'];
+            
+            let inputData = [
+                weight / 100, // Normalized weight
+                height / 2.5, // Normalized height
+                bmi / 50, // Normalized BMI
+                exerciseDuration > 0 ? exerciseDuration / 120 : 0, // Normalized exercise duration
+                ...(exerciseDuration > 0 ? oneHotEncode(exerciseType, exerciseCategories) : [0, 0, 0]),
+                ...oneHotEncode(sex, sexCategories)
+            ];
+            
+            let X_tensor = tf.tensor2d([inputData], [1, inputData.length]);
+            let coeff_tensor = tf.tensor1d(coefficients.slice(0, inputData.length));
+            let prediction = tf.sum(tf.mul(X_tensor, coeff_tensor)).arraySync() + bias;
+            
+            // Ensure weight loss is zero if no exercise is performed
+            prediction = exerciseDuration > 0 ? prediction : 0;
+            
+            document.getElementById('bmiResult').innerText = "Calculated BMI: " + bmi.toFixed(2);
+            document.getElementById('result').innerText = "Predicted Weight Loss: " + prediction.toFixed(2) + " kg";
+        }
+    </script>
 </body>
 </html>
