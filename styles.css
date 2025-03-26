@@ -1,99 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Baloo+Bhai+2&family=Poppins:wght@300&display=swap');
-
 body {
-    
-    font-family: 'Poppins', sans-serif;
-    background-color: #f4f8ff;
-    color: #2c3e50;
+    font-family: Arial, sans-serif;
     text-align: center;
+    background-color: #f1fc5e;
     margin: 0;
     padding: 0;
 }
 
-h1 {
-    font-size: 40px;
-    text-shadow: 2px 2px 4px rgba(44, 62, 80, 0.2);
-    margin-bottom: 10px;
-}
-
-h3 {
-    color: #3498db;
-}
-
-.input-title {
-    font-weight: bold;
-    font-size: 18px;
-    color: #34495e;
-    margin-bottom: 10px;
-}
-
-/* FORM STYLING */
-form {
-    max-width: 450px;
-    margin: 25px auto;
-    padding: 25px;
-    background: white;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+.container {
+    background: rgb(83, 226, 138);
+    width: 50%;
+    margin: auto;
+    padding: 20px;
     border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+    border: 1px solid #333; /* Added border */
 }
 
-/* Input fields are now stacked with proper spacing */
-.form-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-label {
-    font-weight: bold;
-    font-size: 16px;
-    margin-bottom: 5px;
-}
-
-/* Better-looking input fields */
-input {
-    width: 90%;
+input, select, button {
+    display: block;
+    width: 80%;
+    margin: 10px auto;
     padding: 10px;
-    font-size: 18px;
-    font-family: 'Poppins', sans-serif;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    text-align: center;
-    outline: none;
-    transition: all 0.3s ease-in-out;
-}
-
-/* Input field hover/focus effect */
-input:focus {
-    border-color: #3498db;
-    box-shadow: 0px 0px 8px rgba(52, 152, 219, 0.5);
-}
-
-/* BUTTON STYLING */
-button {
-    background-color: #3498db;
-    color: white;
-    font-weight: 600;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
     font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #450ec5;
+    color: white;
+    border: none;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-    margin-top: 10px;
+    border-radius: 5px;
 }
 
-/* Button hover effect */
 button:hover {
-    background-color: #2980b9;
-    transform: scale(1.05);
+    background-color: #218838;
 }
 
-/* FOOTER */
-footer {
-    font-weight: bold;
-    color: #2c3e50;
-    margin-top: 20px;
-    font-size: 18px;
-}
