@@ -1,47 +1,39 @@
- // Learned Parameters
- const coefficients = [0.05750528, -0.29441001, -0.01331863, 1.4067613, 0.94437414, 0.00215475];
- const intercept = 5.288190272693152;
+function predictWeightLoss() {
+    let age = parseFloat(document.getElementById("age").value);
+    let weight = parseFloat(document.getElementById("weight").value);
+    let height = parseFloat(document.getElementById("height").value);
+    let calories = parseFloat(document.getElementById("calories").value);
+    let activity = document.getElementById("activity").value;
+    let gender = document.getElementById("gender").value;
+    let duration = parseFloat(document.getElementById("duration").value);
 
- // Standardization parameters (replace with actual values)
- const means = [29.91182, 39.31875, 0.46250, 50.53125, 54.18125, 0.95625]; // Actual means
- const stdDevs = [7.524399, 11.936610, 0.500157, 22.562261, 19.550570, 0.819164]; // Actual std devs
+    if (isNaN(age) || isNaN(weight) || isNaN(height) || isNaN(calories) || isNaN(duration)) {
+        alert("Please fill in all fields correctly.");
+        return;
+    }
 
- // Normalize and predict function
- function predictWeightLoss() {
-     // Get user input
-     const bmi = parseFloat(document.getElementById("bmi").value);
-     const age = parseInt(document.getElementById("age").value);
-     const gender = parseInt(document.getElementById("gender").value);
-     const exerciseDuration = parseInt(document.getElementById("exerciseDuration").value);
-     const numDays = parseInt(document.getElementById("numDays").value);
-     const exerciseType = parseInt(document.getElementById("exerciseType").value);
+    // ML-derived weights and bias
+    let W = { 
+        age: 0.1091,      
+        weight: -0.1148,    
+        height: -0.0144,    
+        calories: -0.0024,  
+        duration: 0.0058,  
+        gender: { male: -0.1537, female: 0 },  
+        activity: { low: 0, moderate: 0.2284, high: 0.0899 }  
+    };
+    
+    let B = 15.1325;  
 
-     // Scale the input values based on the means and standard deviations
-     const scaledInput = [
-         (bmi - means[0]) / stdDevs[0],
-         (age - means[1]) / stdDevs[1],
-         (gender - means[2]) / stdDevs[2],
-         (exerciseDuration - means[3]) / stdDevs[3],
-         (numDays - means[4]) / stdDevs[4],
-         (exerciseType - means[5]) / stdDevs[5]
-     ];
+    // Convert activity level to numerical value
+    let activityEffect = W.activity[activity] || 0;
 
-     // Debug: Log the scaled inputs to check if they are reasonable
-     console.log("Scaled Input:", scaledInput);
+    // Calculate prediction using the ML formula
+    let prediction = (W.age * age) + (W.weight * weight) + (W.height * height) + 
+                     (W.calories * calories) + (W.duration * duration) + 
+                     W.gender[gender] + activityEffect + B;
 
-     // Calculate the predicted weight loss using the learned model
-     let predictedWeightLoss = intercept;
-     for (let i = 0; i < coefficients.length; i++) {
-         predictedWeightLoss += coefficients[i] * scaledInput[i];
-     }
+    prediction = Math.max(0, prediction); // Ensure no negative predictions
 
-     // Debug: Log the predicted value before capping
-     console.log("Predicted Weight Loss (before capping):", predictedWeightLoss);
-
-     // Cap the predicted weight loss to 0 and 15
-     predictedWeightLoss = Math.max(0, Math.min(15, predictedWeightLoss));
-
-     // Output the result
-     document.getElementById("predictionOutput").innerText = predictedWeightLoss.toFixed(2);
- }
- 
+    document.getElementById("result").innerText = prediction.toFixed(2);
+}
